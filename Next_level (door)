@@ -1,0 +1,36 @@
+# The next level script managing the Door to exit
+
+extends Area2D
+
+var play_animation = false
+@export var pordal: AnimatedSprite2D
+
+const FILE_BEGIN = "res://scenes/levels/level_"
+
+func _ready():
+	pordal = $AnimatedSprite2D
+	pordal.play("portal")
+
+func _on_body_entered(body):
+	if body.is_in_group("Player"):
+		print("Player entered portal. Preparing to change scene.")
+		call_deferred("_change_scene")
+
+func _change_scene():
+	# Assuming that current_scene_file is not needed, remove it or prefix it with an underscore
+	var _current_scene_file = get_tree().current_scene.scene_file_path
+	var current_level_number = _current_scene_file.get_basename().get_slice("_", 1).to_int()  # Extract level number from the file name
+	var next_level_number = current_level_number + 1
+
+	var next_level_path = "res://scenes/levels/level_" + str(next_level_number) + ".tscn"
+	print("Current level: %d, Next level: %d" % [current_level_number, next_level_number])
+	print("Next level path: %s" % next_level_path)
+
+	if ResourceLoader.exists(next_level_path):
+		get_tree().change_scene_to_file(next_level_path)
+		InteractionManager.show()
+	else:
+		print("Error: Level file %s does not exist." % next_level_path)
+
+func _on_animated_sprite_2d_animation_looped():
+	pass  # Replace with function body.
